@@ -54,8 +54,12 @@ public class PlayerController : MonoBehaviour
 
         if (_isMoving)
         {
-            Vector3 cameraEuler = new Vector3(0, cameraPivot.eulerAngles.y, 0);
-            transform.rotation = Quaternion.Lerp(transform.rotation ,Quaternion.Euler(cameraEuler), 5 * Time.deltaTime );
+
+            float angle = InputToAngle(v, h);// + cameraPivot.eulerAngles.y;
+            Debug.Log(angle);
+            Vector3 cameraEuler = new Vector3(0,cameraPivot.eulerAngles.y, 0);
+            Vector3 endEuler = Vector3.Lerp(transform.eulerAngles,cameraEuler, 5 * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(endEuler); //Quaternion.Lerp(transform.rotation ,Quaternion.Euler(cameraEuler), 5 * Time.deltaTime );
         }
     }
     void Pulo()
@@ -76,5 +80,11 @@ public class PlayerController : MonoBehaviour
         if(transform.position.y <= -10) {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+    }
+
+    float InputToAngle(float x, float y)
+    {
+        Vector2 vec = new Vector2(-x, y).normalized;
+        return Mathf.Atan2(vec.y, vec.x) * Mathf.Rad2Deg - 90;
     }
 }

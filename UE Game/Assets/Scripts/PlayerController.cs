@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour
     private Transform cameraPivot;
     private Animator _animator;
 
+    private float toleranciaMovimento = 0.1f;
+
     private bool _isMoving;
     void Start()
     {
@@ -24,8 +26,13 @@ public class PlayerController : MonoBehaviour
         TryGetComponent(out _rb);
         cameraPivot = Camera.main.transform;
     }
-    void OnCollisionEnter(Collision col) {
-        noChao = true;
+    void OnCollisionEnter(Collision col){
+        
+        if (col.gameObject.layer == LayerMask.NameToLayer("Cenario"))
+        {
+            noChao = true;
+        }
+        
     }
     void Update() {
        Movimento();
@@ -43,23 +50,12 @@ public class PlayerController : MonoBehaviour
         direcao = new Vector3(direcao.x, _rb.velocity.y, direcao.z);
         _rb.velocity = Vector3.Lerp(_rb.velocity, direcao, 5 * Time.deltaTime);
 
-        if (noChao && _rb.velocity != Vector3.zero)
-        {
-            _isMoving = true;
-        }
-        else if(noChao && _rb.velocity == Vector3.zero)
-        {
-            _isMoving = false;
-        }
+        _isMoving = direcao.magnitude > toleranciaMovimento;
 
-        if (_isMoving)
+        if (noChao && _isMoving)
         {
-
-            float angle = InputToAngle(v, h);// + cameraPivot.eulerAngles.y;
-            Debug.Log(angle);
             Vector3 cameraEuler = new Vector3(0,cameraPivot.eulerAngles.y, 0);
-            Vector3 endEuler = Vector3.Lerp(transform.eulerAngles,cameraEuler, 5 * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(endEuler); //Quaternion.Lerp(transform.rotation ,Quaternion.Euler(cameraEuler), 5 * Time.deltaTime );
+            transform.rotation = Quaternion.Lerp(transform.rotation ,Quaternion.Euler(cameraEuler), 5 * Time.deltaTime );
         }
     }
     void Pulo()
@@ -81,10 +77,5 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
-
-    float InputToAngle(float x, float y)
-    {
-        Vector2 vec = new Vector2(-x, y).normalized;
-        return Mathf.Atan2(vec.y, vec.x) * Mathf.Rad2Deg - 90;
-    }
+    
 }

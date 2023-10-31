@@ -15,6 +15,11 @@ public class CameraMove : MonoBehaviour
     {
         TryGetComponent(out freeLookCam);
         
+        //localizar objeto do player
+        Transform player = GameObject.FindWithTag("Player").transform;
+        freeLookCam.Follow = player;
+        freeLookCam.LookAt = player;
+        
         if (!esconderMouse)
         {
             return;

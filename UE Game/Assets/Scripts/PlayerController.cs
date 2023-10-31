@@ -10,8 +10,10 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
-    public int velocidade = 10;
-    public int forcaPulo = 7;
+    public int velocidadeOriginal = 10;
+    public int velocidadeAtual;
+    public int forcaPuloOriginal = 7;
+    public int forcaPuloAtual = 7;
     private Rigidbody _rb;
     public bool noChao;
     private Transform cameraPivot;
@@ -25,6 +27,8 @@ public class PlayerController : MonoBehaviour
         TryGetComponent(out _animator);
         TryGetComponent(out _rb);
         cameraPivot = Camera.main.transform;
+        velocidadeAtual = velocidadeOriginal;
+        forcaPuloAtual = forcaPuloOriginal;
     }
     void OnCollisionEnter(Collision col){
         
@@ -46,7 +50,7 @@ public class PlayerController : MonoBehaviour
         float h = Input.GetAxis("Horizontal"); //-1 esquerda,0 nada, 1 direita
         float v = Input.GetAxis("Vertical");// -1 pra tras, 0 nada, 1 pra frente
         
-        Vector3 direcao = (cameraPivot.forward * v + cameraPivot.right * h) * velocidade;
+        Vector3 direcao = (cameraPivot.forward * v + cameraPivot.right * h) * velocidadeAtual;
         direcao = new Vector3(direcao.x, _rb.velocity.y, direcao.z);
         _rb.velocity = Vector3.Lerp(_rb.velocity, direcao, 5 * Time.deltaTime);
 
@@ -61,7 +65,7 @@ public class PlayerController : MonoBehaviour
     void Pulo()
     {
         if (Input.GetKeyDown(KeyCode.Space) && noChao ) {
-            _rb.AddForce(Vector3.up * forcaPulo, ForceMode.Impulse); //pulo
+            _rb.AddForce(Vector3.up * forcaPuloAtual, ForceMode.Impulse); //pulo
             noChao = false;
         }
     }
@@ -77,5 +81,25 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
+
+    public void SetVelocidade(int valor)
+    {
+        velocidadeAtual = valor;
+    }
+    
+    public void ResetVelocidade()
+    {
+        velocidadeAtual = velocidadeOriginal;
+    }
+    public void SetForcaPulo(int valor)
+    {
+        forcaPuloAtual = valor;
+    }
+    
+    public void ResetForcaPulo()
+    {
+        forcaPuloAtual = forcaPuloOriginal;
+    }
+    
     
 }
